@@ -60,9 +60,8 @@ plot(1: M, T_train, 'r-*', 1: M, T_sim1, 'b-o', 'LineWidth', 1)
 legend('真实值', '预测值')
 xlabel('预测样本')
 ylabel('预测结果')
-string = {'训练集预测结果对比'; ['准确率=' num2str(error1) '%']};
+string = {strcat('训练集预测结果对比：', ['准确率=' num2str(error1) '%'])};
 title(string)
-xlim([1, M])
 grid
 
 figure
@@ -70,9 +69,8 @@ plot(1: N, T_test, 'r-*', 1: N, T_sim2, 'b-o', 'LineWidth', 1)
 legend('真实值', '预测值')
 xlabel('预测样本')
 ylabel('预测结果')
-string = {'测试集预测结果对比'; ['准确率=' num2str(error2) '%']};
+string = {strcat('测试集预测结果对比：', ['准确率=' num2str(error2) '%'])};
 title(string)
-xlim([1, N])
 grid
 
 %%  混淆矩阵
