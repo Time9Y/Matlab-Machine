@@ -1,23 +1,26 @@
-%%  æ¸…ç©ºç¯å¢ƒå˜é‡
-warning off             % å…³é—­æŠ¥è­¦ä¿¡æ¯
-close all               % å…³é—­å¼€å¯çš„å›¾çª—
-clear                   % æ¸…ç©ºå˜é‡
-clc                     % æ¸…ç©ºå‘½ä»¤è¡Œ
+%%  Çå¿Õ»·¾³±äÁ¿
+warning off             % ¹Ø±Õ±¨¾¯ĞÅÏ¢
+close all               % ¹Ø±Õ¿ªÆôµÄÍ¼´°
+clear                   % Çå¿Õ±äÁ¿
+clc                     % Çå¿ÕÃüÁîĞĞ
 
-%%  å¯¼å…¥æ•°æ®ï¼ˆæ—¶é—´åºåˆ—çš„å•åˆ—æ•°æ®ï¼‰
-result = xlsread('æ•°æ®é›†.xlsx');
+%%  µ¼ÈëÊı¾İ£¨Ê±¼äĞòÁĞµÄµ¥ÁĞÊı¾İ£©
+result = xlsread('Êı¾İ¼¯.xlsx');
 
-%%  æ•°æ®åˆ†æ
-num_samples = length(result);  % æ ·æœ¬ä¸ªæ•° 
-kim = 15;                      % å»¶æ—¶æ­¥é•¿ï¼ˆkimä¸ªå†å²æ•°æ®ä½œä¸ºè‡ªå˜é‡ï¼‰
-zim =  1;                      % è·¨zimä¸ªæ—¶é—´ç‚¹è¿›è¡Œé¢„æµ‹
+%%  Ìí¼ÓÂ·¾¶
+addpath('goat\')
 
-%%  æ„é€ æ•°æ®é›†
+%%  Êı¾İ·ÖÎö
+num_samples = length(result);  % Ñù±¾¸öÊı 
+kim = 15;                      % ÑÓÊ±²½³¤£¨kim¸öÀúÊ·Êı¾İ×÷Îª×Ô±äÁ¿£©
+zim =  1;                      % ¿çzim¸öÊ±¼äµã½øĞĞÔ¤²â
+
+%%  ¹¹ÔìÊı¾İ¼¯
 for i = 1: num_samples - kim - zim + 1
     res(i, :) = [reshape(result(i: i + kim - 1), 1, kim), result(i + kim + zim - 1)];
 end
 
-%%  åˆ’åˆ†è®­ç»ƒé›†å’Œæµ‹è¯•é›†
+%%  »®·ÖÑµÁ·¼¯ºÍ²âÊÔ¼¯
 temp = 1: 1: 922;
 
 P_train = res(temp(1: 700), 1: 15)';
@@ -28,115 +31,139 @@ P_test = res(temp(701: end), 1: 15)';
 T_test = res(temp(701: end), 16)';
 N = size(P_test, 2);
 
-%%  æ•°æ®å½’ä¸€åŒ–
+%%  Êı¾İ¹éÒ»»¯
 [p_train, ps_input] = mapminmax(P_train, 0, 1);
 p_test = mapminmax('apply', P_test, ps_input);
 
 [t_train, ps_output] = mapminmax(T_train, 0, 1);
 t_test = mapminmax('apply', T_test, ps_output);
 
-%%  å»ºç«‹æ¨¡å‹
-S1 = 5;           %  éšè—å±‚èŠ‚ç‚¹ä¸ªæ•°                
+%%  ½¨Á¢Ä£ĞÍ
+S1 = 5;           %  Òş²Ø²ã½Úµã¸öÊı                
 net = newff(p_train, t_train, S1);
 
-%%  è®¾ç½®å‚æ•°
-net.trainParam.epochs = 1000;        % æœ€å¤§è¿­ä»£æ¬¡æ•° 
-net.trainParam.goal   = 1e-6;        % è®¾ç½®è¯¯å·®é˜ˆå€¼
-net.trainParam.lr     = 0.01;        % å­¦ä¹ ç‡
+%%  ÉèÖÃ²ÎÊı
+net.trainParam.epochs = 1000;        % ×î´óµü´ú´ÎÊı 
+net.trainParam.goal   = 1e-6;        % ÉèÖÃÎó²îãĞÖµ
+net.trainParam.lr     = 0.01;        % Ñ§Ï°ÂÊ
 
-%%  è®¾ç½®ä¼˜åŒ–å‚æ•°
-gen = 50;                       % é—ä¼ ä»£æ•°
-pop_num = 5;                    % ç§ç¾¤è§„æ¨¡
+%%  ÉèÖÃÓÅ»¯²ÎÊı
+gen = 50;                       % ÒÅ´«´úÊı
+pop_num = 5;                    % ÖÖÈº¹æÄ£
 S = size(p_train, 1) * S1 + S1 * size(t_train, 1) + S1 + size(t_train, 1);
-                                % ä¼˜åŒ–å‚æ•°ä¸ªæ•°
-bounds = ones(S, 1) * [-1, 1];  % ä¼˜åŒ–å˜é‡è¾¹ç•Œ
+                                % ÓÅ»¯²ÎÊı¸öÊı
+bounds = ones(S, 1) * [-1, 1];  % ÓÅ»¯±äÁ¿±ß½ç
 
-%%  åˆå§‹åŒ–ç§ç¾¤
-prec = [1e-6, 1];               % epslin ä¸º1e-6, å®æ•°ç¼–ç 
-normGeomSelect = 0.09;          % é€‰æ‹©å‡½æ•°çš„å‚æ•°
-arithXover = 2;                 % äº¤å‰å‡½æ•°çš„å‚æ•°
-nonUnifMutation = [2 gen 3];    % å˜å¼‚å‡½æ•°çš„å‚æ•°
+%%  ³õÊ¼»¯ÖÖÈº
+prec = [1e-6, 1];               % epslin Îª1e-6, ÊµÊı±àÂë
+normGeomSelect = 0.09;          % Ñ¡Ôñº¯ÊıµÄ²ÎÊı
+arithXover = 2;                 % ½»²æº¯ÊıµÄ²ÎÊı
+nonUnifMutation = [2 gen 3];    % ±äÒìº¯ÊıµÄ²ÎÊı
 
 initPpp = initializega(pop_num, bounds, 'gabpEval', [], prec);  
 
-%%  ä¼˜åŒ–ç®—æ³•
+%%  ÓÅ»¯Ëã·¨
 [Bestpop, endPop, bPop, trace] = ga(bounds, 'gabpEval', [], initPpp, [prec, 0], 'maxGenTerm', gen,...
                            'normGeomSelect', normGeomSelect, 'arithXover', arithXover, ...
                            'nonUnifMutation', nonUnifMutation);
 
-%%  è·å–æœ€ä¼˜å‚æ•°
+%%  »ñÈ¡×îÓÅ²ÎÊı
 [val, W1, B1, W2, B2] = gadecod(Bestpop);
 
-%%  å‚æ•°èµ‹å€¼
+%%  ²ÎÊı¸³Öµ
 net.IW{1, 1} = W1;
 net.LW{2, 1} = W2;
 net.b{1}     = B1;
 net.b{2}     = B2;
 
-%%  æ¨¡å‹è®­ç»ƒ
-net.trainParam.showWindow = 1;       % æ‰“å¼€è®­ç»ƒçª—å£
-net = train(net, p_train, t_train);  % è®­ç»ƒæ¨¡å‹
+%%  Ä£ĞÍÑµÁ·
+net.trainParam.showWindow = 1;       % ´ò¿ªÑµÁ·´°¿Ú
+net = train(net, p_train, t_train);  % ÑµÁ·Ä£ĞÍ
 
-%%  ä»¿çœŸæµ‹è¯•
+%%  ·ÂÕæ²âÊÔ
 t_sim1 = sim(net, p_train);
 t_sim2 = sim(net, p_test );
 
-%%  æ•°æ®åå½’ä¸€åŒ–
+%%  Êı¾İ·´¹éÒ»»¯
 T_sim1 = mapminmax('reverse', t_sim1, ps_output);
 T_sim2 = mapminmax('reverse', t_sim2, ps_output);
 
-%%  å‡æ–¹æ ¹è¯¯å·®
+%%  ¾ù·½¸ùÎó²î
 error1 = sqrt(sum((T_sim1 - T_train).^2) ./ M);
 error2 = sqrt(sum((T_sim2 - T_test ).^2) ./ N);
 
-%%  ä¼˜åŒ–è¿­ä»£æ›²çº¿
+%%  ÓÅ»¯µü´úÇúÏß
 figure
 plot(trace(:, 1), 1 ./ trace(:, 2), 'LineWidth', 1.5);
-xlabel('è¿­ä»£æ¬¡æ•°');
-ylabel('é€‚åº”åº¦å€¼');
-string = {'é€‚åº”åº¦å˜åŒ–æ›²çº¿'};
+xlabel('µü´ú´ÎÊı');
+ylabel('ÊÊÓ¦¶ÈÖµ');
+string = {'ÊÊÓ¦¶È±ä»¯ÇúÏß'};
 title(string)
 grid on
 
-%%  ç»˜å›¾
+%%  »æÍ¼
 figure
 plot(1: M, T_train, 'r-', 1: M, T_sim1, 'b-', 'LineWidth', 1)
-legend('çœŸå®å€¼','é¢„æµ‹å€¼')
-xlabel('é¢„æµ‹æ ·æœ¬')
-ylabel('é¢„æµ‹ç»“æœ')
-string = {'è®­ç»ƒé›†é¢„æµ‹ç»“æœå¯¹æ¯”'; ['RMSE=' num2str(error1)]};
+legend('ÕæÊµÖµ', 'Ô¤²âÖµ')
+xlabel('Ô¤²âÑù±¾')
+ylabel('Ô¤²â½á¹û')
+string = {'ÑµÁ·¼¯Ô¤²â½á¹û¶Ô±È'; ['RMSE=' num2str(error1)]};
 title(string)
 xlim([1, M])
 grid
 
 figure
 plot(1: N, T_test, 'r-', 1: N, T_sim2, 'b-', 'LineWidth', 1)
-legend('çœŸå®å€¼','é¢„æµ‹å€¼')
-xlabel('é¢„æµ‹æ ·æœ¬')
-ylabel('é¢„æµ‹ç»“æœ')
-string = {'æµ‹è¯•é›†é¢„æµ‹ç»“æœå¯¹æ¯”';['RMSE=' num2str(error2)]};
+legend('ÕæÊµÖµ', 'Ô¤²âÖµ')
+xlabel('Ô¤²âÑù±¾')
+ylabel('Ô¤²â½á¹û')
+string = {'²âÊÔ¼¯Ô¤²â½á¹û¶Ô±È'; ['RMSE=' num2str(error2)]};
 title(string)
 xlim([1, N])
 grid
 
-%%  ç›¸å…³æŒ‡æ ‡è®¡ç®—
-%  R2
+%%  Ïà¹ØÖ¸±ê¼ÆËã
+% R2
 R1 = 1 - norm(T_train - T_sim1)^2 / norm(T_train - mean(T_train))^2;
 R2 = 1 - norm(T_test -  T_sim2)^2 / norm(T_test -  mean(T_test ))^2;
 
-disp(['è®­ç»ƒé›†æ•°æ®çš„R2ä¸ºï¼š', num2str(R1)])
-disp(['æµ‹è¯•é›†æ•°æ®çš„R2ä¸ºï¼š', num2str(R2)])
+disp(['ÑµÁ·¼¯Êı¾İµÄR2Îª£º', num2str(R1)])
+disp(['²âÊÔ¼¯Êı¾İµÄR2Îª£º', num2str(R2)])
 
-%  MAE
+% MAE
 mae1 = sum(abs(T_sim1 - T_train)) ./ M ;
 mae2 = sum(abs(T_sim2 - T_test )) ./ N ;
 
-disp(['è®­ç»ƒé›†æ•°æ®çš„MAEä¸ºï¼š', num2str(mae1)])
-disp(['æµ‹è¯•é›†æ•°æ®çš„MAEä¸ºï¼š', num2str(mae2)])
+disp(['ÑµÁ·¼¯Êı¾İµÄMAEÎª£º', num2str(mae1)])
+disp(['²âÊÔ¼¯Êı¾İµÄMAEÎª£º', num2str(mae2)])
 
-%  MBE
+% MBE
 mbe1 = sum(T_sim1 - T_train) ./ M ;
 mbe2 = sum(T_sim2 - T_test ) ./ N ;
 
-disp(['è®­ç»ƒé›†æ•°æ®çš„MBEä¸ºï¼š', num2str(mbe1)])
-disp(['æµ‹è¯•é›†æ•°æ®çš„MBEä¸ºï¼š', num2str(mbe2)])
+disp(['ÑµÁ·¼¯Êı¾İµÄMBEÎª£º', num2str(mbe1)])
+disp(['²âÊÔ¼¯Êı¾İµÄMBEÎª£º', num2str(mbe2)])
+
+%%  »æÖÆÉ¢µãÍ¼
+sz = 25;
+c = 'b';
+
+figure
+scatter(T_train, T_sim1, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('ÑµÁ·¼¯ÕæÊµÖµ');
+ylabel('ÑµÁ·¼¯Ô¤²âÖµ');
+xlim([min(T_train) max(T_train)])
+ylim([min(T_sim1) max(T_sim1)])
+title('ÑµÁ·¼¯Ô¤²âÖµ vs. ÑµÁ·¼¯ÕæÊµÖµ')
+
+figure
+scatter(T_test, T_sim2, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('²âÊÔ¼¯ÕæÊµÖµ');
+ylabel('²âÊÔ¼¯Ô¤²âÖµ');
+xlim([min(T_test) max(T_test)])
+ylim([min(T_sim2) max(T_sim2)])
+title('²âÊÔ¼¯Ô¤²âÖµ vs. ²âÊÔ¼¯ÕæÊµÖµ')
