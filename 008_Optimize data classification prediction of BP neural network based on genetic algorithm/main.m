@@ -7,6 +7,9 @@ clc                     % 清空命令行
 %%  导入数据
 res = xlsread('数据集.xlsx');
 
+%%  添加路径
+addpath('goat\')
+
 %%  划分训练集和测试集
 temp = randperm(357);
 
