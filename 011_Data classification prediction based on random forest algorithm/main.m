@@ -43,8 +43,8 @@ t_sim1 = predict(net, p_train);
 t_sim2 = predict(net, p_test );
 
 %%  格式转换
-T_sim1 = str2num(cell2mat(t_sim1));
-T_sim2 = str2num(cell2mat(t_sim2));
+T_sim1 = str2double(t_sim1);
+T_sim2 = str2double(t_sim2);
 
 %%  性能评价
 error1 = sum((T_sim1' == T_train)) / M * 100 ;
@@ -52,7 +52,7 @@ error2 = sum((T_sim2' == T_test )) / N * 100 ;
 
 %%  绘制误差曲线
 figure
-plot(1 : trees, oobError(net), 'b-', 'LineWidth', 1)
+plot(1: trees, oobError(net), 'b-', 'LineWidth', 1)
 legend('误差曲线')
 xlabel('决策树数目')
 ylabel('误差')
