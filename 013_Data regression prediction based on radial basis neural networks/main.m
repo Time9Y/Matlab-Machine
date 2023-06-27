@@ -47,7 +47,7 @@ view(net)
 %%  绘图
 figure
 plot(1: M, T_train, 'r-*', 1: M, T_sim1, 'b-o', 'LineWidth', 1)
-legend('真实值','预测值')
+legend('真实值', '预测值')
 xlabel('预测样本')
 ylabel('预测结果')
 string = {'训练集预测结果对比'; ['RMSE=' num2str(error1)]};
@@ -57,32 +57,56 @@ grid
 
 figure
 plot(1: N, T_test, 'r-*', 1: N, T_sim2, 'b-o', 'LineWidth', 1)
-legend('真实值','预测值')
+legend('真实值', '预测值')
 xlabel('预测样本')
 ylabel('预测结果')
-string = {'测试集预测结果对比';['RMSE=' num2str(error2)]};
+string = {'测试集预测结果对比'; ['RMSE=' num2str(error2)]};
 title(string)
 xlim([1, N])
 grid
 
 %%  相关指标计算
-%  R2
+% R2
 R1 = 1 - norm(T_train - T_sim1)^2 / norm(T_train - mean(T_train))^2;
-R2 = 1 - norm(T_test -  T_sim2)^2 / norm(T_test -  mean(T_test ))^2;
+R2 = 1 - norm(T_test  - T_sim2)^2 / norm(T_test  - mean(T_test ))^2;
 
 disp(['训练集数据的R2为：', num2str(R1)])
 disp(['测试集数据的R2为：', num2str(R2)])
 
-%  MAE
+% MAE
 mae1 = sum(abs(T_sim1 - T_train)) ./ M ;
-mae2 = sum(abs(T_sim2 -  T_test)) ./ N ;
+mae2 = sum(abs(T_sim2 - T_test )) ./ N ;
 
 disp(['训练集数据的MAE为：', num2str(mae1)])
 disp(['测试集数据的MAE为：', num2str(mae2)])
 
-%  MBE
+% MBE
 mbe1 = sum(T_sim1 - T_train) ./ M ;
-mbe2 = sum(T_sim2 -  T_test) ./ N ;
+mbe2 = sum(T_sim2 - T_test ) ./ N ;
 
 disp(['训练集数据的MBE为：', num2str(mbe1)])
 disp(['测试集数据的MBE为：', num2str(mbe2)])
+
+%%  绘制散点图
+sz = 25;
+c = 'b';
+
+figure
+scatter(T_train, T_sim1, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('训练集真实值');
+ylabel('训练集预测值');
+xlim([min(T_train) max(T_train)])
+ylim([min(T_sim1) max(T_sim1)])
+title('训练集预测值 vs. 训练集真实值')
+
+figure
+scatter(T_test, T_sim2, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('测试集真实值');
+ylabel('测试集预测值');
+xlim([min(T_test) max(T_test)])
+ylim([min(T_sim2) max(T_sim2)])
+title('测试集预测值 vs. 测试集真实值')
