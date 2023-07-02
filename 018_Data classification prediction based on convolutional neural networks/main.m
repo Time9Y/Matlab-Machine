@@ -34,32 +34,30 @@ p_test  =  double(reshape(P_test , 12, 1, 1, N));
 
 %%  构造网络结构
 layers = [
- imageInputLayer([12, 1, 1])             % 输入层
+ imageInputLayer([12, 1, 1])                                % 输入层
  
- convolution2dLayer([2, 1], 16)          % 卷积核大小为2*1 生成16个卷积
- batchNormalizationLayer                 % 批归一化层
- reluLayer                               % relu激活层
+ convolution2dLayer([2, 1], 16, 'Padding', 'same')          % 卷积核大小为 2*1 生成16个卷积
+ batchNormalizationLayer                                    % 批归一化层
+ reluLayer                                                  % relu 激活层
  
- maxPooling2dLayer([2, 1], 'Stride', 1)  % 最大池化层 大小为2*1 步长为2
- 
- convolution2dLayer([2, 1], 32)          % 卷积核大小为2*1 生成32个卷积
- batchNormalizationLayer                 % 批归一化层
- reluLayer                               % relu激活层
- 
- maxPooling2dLayer([2, 1], 'Stride', 1)  % 最大池化层，大小为2*2，步长为2
+ maxPooling2dLayer([2, 1], 'Stride', [2, 1])                % 最大池化层 大小为 2*1 步长为 [2, 1]
 
- fullyConnectedLayer(4)                  % 全连接层（类别数） 
- softmaxLayer                            % 损失函数层
- classificationLayer];                   % 分类层
+ convolution2dLayer([2, 1], 32, 'Padding', 'same')          % 卷积核大小为 2*1 生成32个卷积
+ batchNormalizationLayer                                    % 批归一化层
+ reluLayer                                                  % relu 激活层
+
+ fullyConnectedLayer(4)                                     % 全连接层（类别数） 
+ softmaxLayer                                               % 损失函数层
+ classificationLayer];                                      % 分类层
 
 %%  参数设置
 options = trainingOptions('adam', ...      % Adam 梯度下降算法
     'MaxEpochs', 500, ...                  % 最大训练次数 500
-    'InitialLearnRate', 1e-3, ...          % 初始学习率为0.001
-    'L2Regularization', 1e-04, ...         % L2正则化参数
+    'InitialLearnRate', 1e-3, ...          % 初始学习率为 0.001
+    'L2Regularization', 1e-4, ...          % L2正则化参数
     'LearnRateSchedule', 'piecewise', ...  % 学习率下降
-    'LearnRateDropFactor', 0.5, ...        % 学习率下降因子 0.1
-    'LearnRateDropPeriod', 450, ...        % 经过450次训练后 学习率为 0.001 * 0.5
+    'LearnRateDropFactor', 0.1, ...        % 学习率下降因子 0.1
+    'LearnRateDropPeriod', 400, ...        % 经过450次训练后 学习率为 0.001 * 0.1
     'Shuffle', 'every-epoch', ...          % 每次训练打乱数据集
     'ValidationPatience', Inf, ...         % 关闭验证
     'Plots', 'training-progress', ...      % 画出曲线
