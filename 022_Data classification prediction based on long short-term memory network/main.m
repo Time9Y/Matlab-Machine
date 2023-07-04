@@ -26,9 +26,9 @@ t_train = categorical(T_train)';
 t_test  = categorical(T_test )';
 
 %%  数据平铺
-%   将数据平铺成1维数据只是一种处理方式
-%   也可以平铺成2维数据，以及3维数据，需要修改对应模型结构
-%   但是应该始终和输入层数据结构保持一致
+% 将数据平铺成1维数据只是一种处理方式
+% 也可以平铺成2维数据，以及3维数据，需要修改对应模型结构
+% 但是应该始终和输入层数据结构保持一致
 P_train =  double(reshape(P_train, 12, 1, 1, M));
 P_test  =  double(reshape(P_test , 12, 1, 1, N));
 
@@ -54,12 +54,11 @@ layers = [ ...
 
 %%  参数设置
 options = trainingOptions('adam', ...       % Adam 梯度下降算法
-    'MiniBatchSize', 100, ...               % 批大小
     'MaxEpochs', 1000, ...                  % 最大迭代次数
-    'InitialLearnRate', 1e-2, ...           % 初始学习率
+    'InitialLearnRate', 0.01, ...           % 初始学习率
     'LearnRateSchedule', 'piecewise', ...   % 学习率下降
     'LearnRateDropFactor', 0.1, ...         % 学习率下降因子
-    'LearnRateDropPeriod', 700, ...         % 经过700次训练后 学习率为 0.01 * 0.1
+    'LearnRateDropPeriod', 750, ...         % 经过 750 次训练后 学习率为 0.01 * 0.1
     'Shuffle', 'every-epoch', ...           % 每次训练打乱数据集
     'ValidationPatience', Inf, ...          % 关闭验证
     'Plots', 'training-progress', ...       % 画出曲线
