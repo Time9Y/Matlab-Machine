@@ -27,14 +27,14 @@ t_test  = ind2vec(T_test );
 %%  节点个数
 inputnum  = size(p_train, 1);  % 输入层节点数
 hiddennum = 6;                 % 隐藏层节点数
-outputnum = size(t_train,1);   % 输出层节点数
+outputnum = size(t_train, 1);  % 输出层节点数
 
 %%  建立网络
 net = newff(p_train, t_train, hiddennum);
 
 %%  设置训练参数
 net.trainParam.epochs     = 1000;      % 训练次数
-net.trainParam.goal       = 1e-5;      % 目标误差
+net.trainParam.goal       = 1e-6;      % 目标误差
 net.trainParam.lr         = 0.01;      % 学习率
 net.trainParam.showWindow = 0;         % 关闭窗口
 
@@ -170,12 +170,13 @@ grid
 
 %%  误差曲线迭代图
 figure
-plot(1 : length(BestFit), BestFit, 'LineWidth', 1.5);
+plot(1: length(BestFit), BestFit, 'LineWidth', 1.5);
 xlabel('粒子群迭代次数');
 ylabel('适应度值');
 xlim([1, length(BestFit)])
 string = {'模型迭代误差变化'};
 title(string)
+grid on
 
 %%  混淆矩阵
 figure
