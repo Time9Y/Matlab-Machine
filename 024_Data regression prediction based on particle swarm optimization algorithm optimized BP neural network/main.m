@@ -28,7 +28,7 @@ t_test = mapminmax('apply', T_test, ps_output);
 %%  节点个数
 inputnum  = size(p_train, 1);  % 输入层节点数
 hiddennum = 5;                 % 隐藏层节点数
-outputnum = size(t_train, 1);  % 输出层节点数
+outputnum = size(t_train,1);   % 输出层节点数
 
 %%  建立网络
 net = newff(p_train, t_train, hiddennum);
@@ -42,7 +42,7 @@ net.trainParam.showWindow = 0;         % 关闭窗口
 %%  参数初始化
 c1      = 4.494;       % 学习因子
 c2      = 4.494;       % 学习因子
-maxgen  =   30;        % 种群更新次数  
+maxgen  =   50;        % 种群更新次数  
 sizepop =    5;        % 种群规模
 Vmax    =  1.0;        % 最大速度
 Vmin    = -1.0;        % 最小速度
@@ -66,8 +66,8 @@ fitnessgbest = fitness;        % 个体最佳适应度值
 BestFit = fitnesszbest;        % 全局最佳适应度值
 
 %%  迭代寻优
-for i = 1: maxgen
-    for j = 1: sizepop
+for i = 1 : maxgen
+    for j = 1 : sizepop
         
         % 速度更新
         V(j, :) = V(j, :) + c1 * rand * (gbest(j, :) - pop(j, :)) + c2 * rand * (zbest - pop(j, :));
@@ -173,23 +173,47 @@ title(string)
 grid on
 
 %%  相关指标计算
-%  R2
+% R2
 R1 = 1 - norm(T_train - T_sim1)^2 / norm(T_train - mean(T_train))^2;
-R2 = 1 - norm(T_test -  T_sim2)^2 / norm(T_test -  mean(T_test ))^2;
+R2 = 1 - norm(T_test  - T_sim2)^2 / norm(T_test  - mean(T_test ))^2;
 
 disp(['训练集数据的R2为：', num2str(R1)])
 disp(['测试集数据的R2为：', num2str(R2)])
 
-%  MAE
+% MAE
 mae1 = sum(abs(T_sim1 - T_train), 2)' ./ M ;
 mae2 = sum(abs(T_sim2 - T_test ), 2)' ./ N ;
 
 disp(['训练集数据的MAE为：', num2str(mae1)])
 disp(['测试集数据的MAE为：', num2str(mae2)])
 
-%  MBE
+% MBE
 mbe1 = sum(T_sim1 - T_train, 2)' ./ M ;
 mbe2 = sum(T_sim2 - T_test , 2)' ./ N ;
 
 disp(['训练集数据的MBE为：', num2str(mbe1)])
 disp(['测试集数据的MBE为：', num2str(mbe2)])
+
+%%  绘制散点图
+sz = 25;
+c = 'b';
+
+figure
+scatter(T_train, T_sim1, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('训练集真实值');
+ylabel('训练集预测值');
+xlim([min(T_train) max(T_train)])
+ylim([min(T_sim1) max(T_sim1)])
+title('训练集预测值 vs. 训练集真实值')
+
+figure
+scatter(T_test, T_sim2, sz, c)
+hold on
+plot(xlim, ylim, '--k')
+xlabel('测试集真实值');
+ylabel('测试集预测值');
+xlim([min(T_test) max(T_test)])
+ylim([min(T_sim2) max(T_sim2)])
+title('测试集预测值 vs. 测试集真实值')
