@@ -9,7 +9,6 @@ res = xlsread('数据集.xlsx');
 
 %%  划分训练集和测试集
 temp = randperm(103);
-% temp = 1: 1: 103;
 
 P_train = res(temp(1: 80), 1: 7)';
 T_train = res(temp(1: 80), 8)';
