@@ -21,21 +21,11 @@ p_test = mapminmax('apply', res', ps_input);
 %%  转置以适应模型
 p_test = p_test';
 
-%%  创建随机森林
-importance = model.importance; % 特征的重要性
-
 %%  仿真测试
 t_sim3 = regRF_predict(p_test, model);
 
 %%  数据反归一化
 T_sim3 = mapminmax('reverse', t_sim3, ps_output);
-
-%%  绘制特征重要性
-figure
-bar(model.importance)
-legend('重要性')
-xlabel('特征')
-ylabel('重要性')
 
 %%  保存结果
 xlswrite('预测结果.xlsx', T_sim3);
