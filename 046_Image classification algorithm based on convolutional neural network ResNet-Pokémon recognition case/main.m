@@ -15,12 +15,11 @@ imds = imageDatastore('images', ...       % 读取文件夹名称
 numClasses = numel(categories(imdTrain.Labels));
 
 %%  加载预训练网络
-net = resnet18;
-analyzeNetwork(net)
-img_size = net.Layers(1).InputSize(1: 2);
+lgraph = resnet18('Weights', 'none');
+analyzeNetwork(lgraph)
+img_size = lgraph.Layers(1).InputSize(1: 2);
 
 %% 获取网络的层并修改最后的全连接层和分类层
-lgraph = layerGraph(net);
 
 % 查找原始的全连接层和分类层
 fcLayer = fullyConnectedLayer(numClasses, 'Name', 'new_fc');
